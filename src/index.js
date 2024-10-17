@@ -7,6 +7,10 @@ app.get('/users', (req, res) => {
   res.send('GET /users');
 });
 
+app.get('/users/:id/post/:postId', (req, res) => {
+  res.send(`id: ${req.params.id} & postId: ${req.params.postId}`);
+});
+
 app.post('/users', (req, res) => {
   res.send('POST /users');
 });
