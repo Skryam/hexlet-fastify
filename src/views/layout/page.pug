@@ -1,8 +1,16 @@
 html
   head
-    meta(charset='utf-8')
-    meta(name='viewport', content='width=device-width, initial-scale=1')
+    link(href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous")
+    title My site
+
   body
+    block header
+      nav.navbar.navbar-expand-lg.navbar-light.bg-light
+        div.collapse.navbar-collapse
+          li.nav-item.active
+            a(href='/') Главная
     block content
-  footer
-    a(href="https://github.com/Skryam") Github
+    block foot
+  #footer.text-center.text-lg-start.bg-light.text-muted
+    div.text-center.p-4
+      a(href="https://github.com/Skryam") My github
