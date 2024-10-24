@@ -1,0 +1,22 @@
+extends ../layout/page.pug
+
+block content
+  form(role = 'form' method = 'GET' action = '/users')
+    input(type = 'search', name = 'term', value = term)
+    input(type = 'submit' value = 'search')
+
+  p
+    a(href='/users/new') Создать пользователя
+
+  table
+    tr
+      th Идентификатор пользователя
+      th Имя пользователя
+      th Емейл пользователя
+
+    each user, index in users
+      tr
+        td
+          a(href='/users/' + user.id) #{user.id}
+        td= user.username
+        td= user.email

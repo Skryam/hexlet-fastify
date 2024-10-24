@@ -5,7 +5,11 @@ block content
     input(type = 'search', placeholder = 'название курса', name = 'term', value = term)
     input(type = 'search', placeholder = 'описание курса', name = 'description', value = description)
     input(type = 'submit' value = 'search')
-    table.table.table-striped
+
+  p
+    a(href='/courses/new') Добавить курс
+  
+  table.table.table-striped
         tr
           th Название курса
           th Описание курса
