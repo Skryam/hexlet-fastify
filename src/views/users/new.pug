@@ -3,17 +3,20 @@ extends ../layout/page.pug
 block content
   html
     body
+      if error
+        p= error.message
+
       form(action = '/users', method = 'post')
         div
           label Имя:
-            input(type = 'text', name = 'username')
+            input(type = 'text', name = 'name', value = name)
         div
           label Email:
-            input(type = 'email', name = 'email', required = true)
+            input(type = 'email', name = 'email', value = email)
         div
           label Пароль:
-            input(type = 'password', name = 'password', required = true)
+            input(type = 'password', name = 'password', value = password)
         div
           label Подтверждение пароля:
-            input(type = 'password', name = 'passwordConfirm', required = true)
+            input(type = 'password', name = 'passwordConfirmation', value = passwordConfirmation)
         input(type = 'submit', value = 'Зарегистрировать')

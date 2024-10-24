@@ -3,6 +3,7 @@ import view from '@fastify/view';
 import pug from 'pug';
 import sanitize from 'sanitize-html';
 import formbody from '@fastify/formbody';
+import yup from 'yup';
 import getCourses, { generateId, crypto, getUsers } from './utils.js'
 
 const app = fastify();
@@ -58,11 +59,33 @@ app.get('/courses/new', (req, res) => {
   res.view('src/views/courses/new');
 });
 
-app.post('/courses', (req, res) => {
-  const course = {
-    coursename: req.body.coursename.trim().toLowerCase(),
-    description: req.body.description.trim().toLowerCase(),
-  };
+app.post('/courses', {
+  attachValidation: true,
+  schema: {
+    body: yup.object({
+      coursename: yup.string().min(2).required(),
+      description: yup.string().min(10).required(),
+    }),
+  },
+  validatorCompiler: ({ schema, method, url, httpPart }) => (data) => {
+    try {
+      const result = schema.validateSync(data);
+      return { value: result };
+    } catch (e) {
+      return { error: e };
+    }
+  },
+}, (req, res) => {
+  const { coursename, description } = req.body;
+
+  if (req.validationError) {
+    const data = { coursename, description, error: req.validationError };
+
+    res.view('src/views/courses/new', data);
+    return;
+  }
+
+  const course = { coursename, description };
 
   courses.push(course);
 
@@ -84,12 +107,46 @@ app.get('/users/new', (req, res) => {
   res.view('src/views/users/new');
 });
 
-app.post('/users', (req, res) => {
+app.post('/users', {
+  attachValidation: true,
+  schema: {
+    body: yup.object({
+      name: yup.string().min(2),
+      email: yup.string().email(),
+      password: yup.string().min(5),
+      passwordConfirmation: yup.string(),
+    }),
+  },
+  validatorCompiler: ({ schema, method, url, httpPart }) => (data) => {
+    if (data.password !== data.passwordConfirmation) {
+      return {
+        error: Error('Password confirmation is not equal the password'),
+      };
+    }
+    try {
+      const result = schema.validateSync(data);
+      return { value: result };
+    } catch (e) {
+      return { error: e };
+    }
+  },
+}, (req, res) => {
+  const { name, email, password, passwordConfirmation } = req.body;
+
+  if (req.validationError) {
+    const data = {
+      name, email, password, passwordConfirmation,
+      error: req.validationError,
+    };
+
+    res.view('src/views/users/new', data);
+    return;
+  }
+
   const user = {
-    username: req.body.username.trim(),
-    email: req.body.email.toLowerCase().trim(),
-    password: crypto(req.body.password),
-    id: generateId(),
+    name,
+    email,
+    password,
   };
 
   users.push(user);

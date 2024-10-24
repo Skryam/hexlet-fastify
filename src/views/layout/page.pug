@@ -6,9 +6,15 @@ html
   body
     block header
       nav.navbar.navbar-expand-lg.navbar-light.bg-light
-        div.collapse.navbar-collapse
+        div.navbar
           li.nav-item.active
             a(href='/') Главная
+        div.navbar
+          li.nav-item.active
+            a(href='/users') Пользователи
+        div.navbar
+          li.nav-item.active
+            a(href='/courses') Курсы
     block content
     block foot
   #footer.text-center.text-lg-start.bg-light.text-muted
