@@ -4,29 +4,42 @@ import pug from 'pug';
 import sanitize from 'sanitize-html';
 import formbody from '@fastify/formbody';
 import yup from 'yup';
-import getCourses, { generateId, crypto, getUsers } from './utils.js'
+import getCourses, { generateId, crypto, getUsers } from './utils.js';
+import { plugin as fastifyReverseRoutes } from 'fastify-reverse-routes';
 
-const app = fastify();
+const app = fastify({ exposeHeadRoutes: false });
 const port = 3000;
 
-await app.register(view, { engine: { pug }})
+await app.register(fastifyReverseRoutes);
+
+const route = (name, placeHoldersValues) => app.reverse(name, placeHoldersValues);
+
+await app.register(view, {
+  engine: { pug },
+  defaultContext: {
+    route,
+  },
+});
+
 await app.register(formbody);
 
 const courses = getCourses();
 const users = getUsers();
 
-app.get('/', (req, res) => {
+app.get('/', { name: 'index' }, (req, res) => {
   res.view('src/views/index')
 })
 
-app.get('/users/:id', (req, res) => {
-  // const escapedId = sanitize(req.params.id)
-  //res.type('html');
-  const { id } = req.params;
-  const data = { id }
- res.view('src/views/users/showId', data);
-});
+app.get('/users/:id', { name: 'user' }, (req, res) => {
+  const user = users.find((item) => item.id === req.params.id);
 
+  if (!user) {
+    res.status(404).send('User not found');
+    return;
+  }
+ res.view('src/views/users/showId', { user });
+});
+/*
 app.get('/users/:id/post/:postId', (req, res) => {
   res.send(`id: ${req.params.id} & postId: ${req.params.postId}`);
 });
@@ -38,9 +51,9 @@ app.get('/hello', (req, res) => {
   } else {
     res.send(`Hello, ${name}!`)
   }
-})
+}) */
 
-app.get('/courses', (req, res) => {
+app.get('/courses', { name: 'courses' }, (req, res) => {
   const { term, description } = req.query;
   let currentCourses = courses;
 
@@ -55,7 +68,7 @@ app.get('/courses', (req, res) => {
   res.view('src/views/courses/index', data);
 });
 
-app.get('/courses/new', (req, res) => {
+app.get('/courses/new', { name: 'newCourse' }, (req, res) => {
   res.view('src/views/courses/new');
 });
 
@@ -92,18 +105,18 @@ app.post('/courses', {
   res.redirect('/courses');
 });
 
-app.get('/users', (req, res) => {
+app.get('/users', { name: 'users' }, (req, res) => {
   const { term } = req.query;
   let currentUsers = users;
 
   if (term) {
-    currentUsers = users.filter((user) => user.username
+    currentUsers = users.filter((user) => user.name
       .toLowerCase().includes(term.toLowerCase()));
   }
   res.view('src/views/users/index', { users: currentUsers });
 });
 
-app.get('/users/new', (req, res) => {
+app.get('/users/new', { name: 'newUser' }, (req, res) => {
   res.view('src/views/users/new');
 });
 
@@ -111,8 +124,8 @@ app.post('/users', {
   attachValidation: true,
   schema: {
     body: yup.object({
-      name: yup.string().min(2),
-      email: yup.string().email(),
+      name: yup.string().min(2).required(),
+      email: yup.string().email().required(),
       password: yup.string().min(5),
       passwordConfirmation: yup.string(),
     }),
@@ -144,6 +157,7 @@ app.post('/users', {
   }
 
   const user = {
+    id: generateId(),
     name,
     email,
     password,
@@ -151,7 +165,7 @@ app.post('/users', {
 
   users.push(user);
 
-  res.redirect('/users');
+  res.redirect(route('users'));
 });
 
 app.listen({ port }, () => {

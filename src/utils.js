@@ -6,7 +6,7 @@ export const generateId = () => faker.string.uuid();
 
 const createRandomUser = () => ({
   id: faker.string.uuid(),
-  username: faker.internet.userName().trim(),
+  name: faker.internet.userName().trim(),
   email: faker.internet.email().toLowerCase().trim(),
   password: crypto(faker.internet.password()),
 });

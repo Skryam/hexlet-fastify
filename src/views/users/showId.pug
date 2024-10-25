@@ -1,2 +1,5 @@
-p work
-h1= id
+extends ../layout/page.pug
+
+block content
+  p #{user.username}
+  p #{user.email}

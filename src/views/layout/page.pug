@@ -11,10 +11,10 @@ html
             a(href='/') Главная
         div.navbar
           li.nav-item.active
-            a(href='/users') Пользователи
+            a(href=route('users')) Пользователи
         div.navbar
           li.nav-item.active
-            a(href='/courses') Курсы
+            a(href=route('courses')) Курсы
     block content
     block foot
   #footer.text-center.text-lg-start.bg-light.text-muted

@@ -6,7 +6,7 @@ block content
       if error
         p= error.message
 
-      form(action = '/users', method = 'post')
+      form(action = route('users'), method = 'post')
         div
           label Имя:
             input(type = 'text', name = 'name', value = name)

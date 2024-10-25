@@ -1,13 +1,13 @@
 extends ../layout/page.pug
 
 block content
-  form(role = 'form' method = 'GET' action = '/courses')
+  form(role = 'form' method = 'GET' action = route('courses'))
     input(type = 'search', placeholder = 'название курса', name = 'term', value = term)
     input(type = 'search', placeholder = 'описание курса', name = 'description', value = description)
     input(type = 'submit' value = 'search')
 
   p
-    a(href='/courses/new') Добавить курс
+    a(href=route('newCourse')) Добавить курс
   
   table.table.table-striped
         tr

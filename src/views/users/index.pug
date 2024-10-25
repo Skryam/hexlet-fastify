@@ -1,12 +1,12 @@
 extends ../layout/page.pug
 
 block content
-  form(role = 'form' method = 'GET' action = '/users')
+  form(role = 'form' method = 'GET' action = route('users'))
     input(type = 'search', name = 'term', value = term)
     input(type = 'submit' value = 'search')
 
   p
-    a(href='/users/new') Создать пользователя
+    a(href=route('newUser')) Создать пользователя
 
   table
     tr
@@ -17,6 +17,6 @@ block content
     each user, index in users
       tr
         td
-          a(href='/users/' + user.id) #{user.id}
+          a(href=route('user', { id: user.id })) #{user.id}
         td= user.name
         td= user.email
