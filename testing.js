@@ -1,6 +1,9 @@
 import getCourses from './src/utils.js'
 
-const cor = getCourses();
-const pa = [{one: 1}]
-pa.push(...cor)
-console.log(pa)
+const ap = [];
+const po = [{2: 2}];
+ap.push(po)
+
+console.log(
+  ap
+)

@@ -1,8 +1,11 @@
 import { getUsers } from '../utils.js';
 import yup from 'yup';
+import { generateId } from '../utils.js';
+
+export const users = [];
+users.push(...getUsers());
 
 export default (app) => {
-  const users = getUsers();
 
   app.get('/users/:id', { name: 'user' }, (req, res) => {
     const user = users.find((item) => item.id === req.params.id);
@@ -11,18 +14,17 @@ export default (app) => {
       res.status(404).send('User not found');
       return;
     }
-  res.view('src/views/users/showId', { user });
+  res.view('users/showId', { user });
   });
 
   app.get('/users', { name: 'users' }, (req, res) => {
     const { term } = req.query;
     let currentUsers = users;
-
     if (term) {
       currentUsers = users.filter((user) => user.name
         .toLowerCase().includes(term.toLowerCase()));
     }
-    res.view('src/views/users/index', { users: currentUsers });
+    res.view('users/index', { users: currentUsers });
   });
 
   app.post('/users', {
@@ -57,7 +59,7 @@ export default (app) => {
         error: req.validationError,
       };
 
-      res.view('src/views/users/new', data);
+      res.view('users/new', data);
       return;
     }
 
@@ -70,10 +72,10 @@ export default (app) => {
 
     users.push(user);
 
-    res.redirect(route('users'));
+    res.redirect(app.reverse('users'));
   });
 
   app.get('/users/new', { name: 'newUser' }, (req, res) => {
-    res.view('src/views/users/new');
+    res.view('users/new');
   });
 }

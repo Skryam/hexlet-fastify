@@ -4,5 +4,13 @@ block content
   body
     main
       h1 Main page
+      if !username
+        p Добро пожаловать, гость
+        a(href='sessions/new') Войти
+      else
+        p Добро пожаловать, #{username}
+        form(action='/sessions/delete', method='post')
+          input(type='submit', value='Выйти')
+      |    
       if visited
         | Работает кука

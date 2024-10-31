@@ -6,6 +6,7 @@ import formbody from '@fastify/formbody';
 import { plugin as fastifyReverseRoutes } from 'fastify-reverse-routes';
 import addRoutes from './routes/index.js';
 import fastifyCookie from '@fastify/cookie';
+import session from '@fastify/session';
 
 export default async () => {
   const app = fastify({ exposeHeadRoutes: false });
@@ -25,14 +26,20 @@ export default async () => {
   await app.register(formbody);
 
   await app.register(fastifyCookie);
+  await app.register(session, {
+    secret: 'a secret with minimum length of 32 characters',
+    cookie: { secure: false },
+  })
 
   app.get('/', { name: 'index' }, (req, res) => {
     const visited = req.cookies.visited;
+    const { username } = req.session;
     const data = {
       visited,
+      username,
     };
     res.cookie('visited', true);
-
+    
     res.view('index', data);
   });
 

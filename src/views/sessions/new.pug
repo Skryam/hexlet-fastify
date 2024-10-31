@@ -1,0 +1,8 @@
+form(action = '/sessions', method = 'post')
+  if error
+    p Неверное имя пользователя
+  div
+    label Имя пользователя
+      input(type = 'text', name = 'username')
+  div
+    input(type = 'submit', value = 'Войти')
