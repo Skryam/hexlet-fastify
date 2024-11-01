@@ -15,6 +15,18 @@ html
         div.navbar
           li.nav-item.active
             a(href=route('courses')) Курсы
+
+    if messages
+      if messages.success
+        for message in messages.success
+          .alert(class=`alert-${message.type}`)
+            = message.message
+
+      if messages.error
+        for message in messages.error
+          .alert(class=`alert-${message.type}`)
+            = message.message
+
     block content
     block foot
   #footer.text-center.text-lg-start.bg-light.text-muted

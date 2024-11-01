@@ -24,7 +24,7 @@ export default (app) => {
       currentUsers = users.filter((user) => user.name
         .toLowerCase().includes(term.toLowerCase()));
     }
-    res.view('users/index', { users: currentUsers });
+    res.view('users/index', { users: currentUsers, messages: res.flash() });
   });
 
   app.post('/users', {
@@ -59,7 +59,8 @@ export default (app) => {
         error: req.validationError,
       };
 
-      res.view('users/new', data);
+      req.flash('error', { type: 'info', message: 'Ошибка регистрации!'})
+      res.view('users/new', { data, messages: res.flash() });
       return;
     }
 
@@ -72,6 +73,7 @@ export default (app) => {
 
     users.push(user);
 
+    req.flash('success', { type: 'success', message: 'Регистрация прошла успешно!'});
     res.redirect(app.reverse('users'));
   });
 
