@@ -8,7 +8,7 @@ block content
         p Добро пожаловать, гость
         a(href='sessions/new') Войти
       else
-        p Добро пожаловать, #{username}
+        p Добро пожаловать, #{username.name}
         form(action='/sessions/delete', method='post')
           input(type='submit', value='Выйти')
       |    

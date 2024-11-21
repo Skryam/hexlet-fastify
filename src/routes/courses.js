@@ -1,26 +1,22 @@
-import getCourses from '../utils.js';
 import yup from 'yup';
 
-export default (app) => {
-  const courses = getCourses();
+export default (app, db) => {
 
   app.get('/courses', { name: 'courses' }, (req, res) => {
     const { term, description } = req.query;
-    let currentCourses = courses;
+    db.all(`
+      SELECT * FROM courses
+      WHERE LOWER(coursename) LIKE LOWER('%${term ?? ''}%')
+        AND LOWER(description) LIKE LOWER('%${description ?? ''}%')`, (err, data) => {
+      if (err) return res.send('Ошибка сервера');
+      const templateDatadata = { term, description, courses: data };
 
-    if(term || description) {
-      currentCourses = courses.filter((elem) => {
-        return elem.coursename.toLocaleLowerCase().includes(term.toLocaleLowerCase()) &&
-        elem.description.toLocaleLowerCase().includes(description.toLocaleLowerCase())
-      })
-    }
-    const data = { term, description, courses: currentCourses };
-
-    res.view('src/views/courses/index', data);
+      res.view('courses/index', templateDatadata);
+    })
   });
 
   app.get('/courses/new', { name: 'newCourse' }, (req, res) => {
-    res.view('src/views/courses/new');
+    res.view('courses/new');
   });
 
   app.post('/courses', {
@@ -45,14 +41,20 @@ export default (app) => {
     if (req.validationError) {
       const data = { coursename, description, error: req.validationError };
 
-      res.view('src/views/courses/new', data);
+      res.view('courses/new', data);
       return;
     }
 
-    const course = { coursename, description };
+    const course = { id: null, coursename, description };
 
-    courses.push(course);
-
-    res.redirect('/courses');
+    const stmt = db.prepare('INSERT INTO courses(id, coursename, description) VALUES (?, ?, ?)');
+    stmt.run([course.id, course.coursename, course.description], function (err) {
+      if (err) {
+        const templateData = { err, course };
+        res.view('courses/new', templateData);
+        return
+      }
+      res.redirect(app.reverse('courses'));
+    })
   });
 }

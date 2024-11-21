@@ -8,9 +8,14 @@ import addRoutes from './routes/index.js';
 import fastifyCookie from '@fastify/cookie';
 import session from '@fastify/session';
 import flash from '@fastify/flash';
+import sqlite3 from 'sqlite3';
+import prepareDatabase from './dbInit.js'
 
 export default async () => {
   const app = fastify({ exposeHeadRoutes: false });
+  const db = new sqlite3.Database(':memory:');
+  prepareDatabase(db);
+
   await app.register(fastifyReverseRoutes);
   const route = (name, placeHoldersValues) => app.reverse(name, placeHoldersValues);
   await app.register(view, {
@@ -40,7 +45,7 @@ export default async () => {
     res.view('index', data);
   });
 
-  addRoutes(app);
+  addRoutes(app, db);
   
   return app;
 }
